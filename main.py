@@ -20,9 +20,15 @@ csv.register_dialect(
 r = praw.Reddit(user_agent='theMusicOfReddit')
 
 listOfTracks = []
+
+# Number of tracks you wish to fetch from each subreddit
 nTracks = 30000
 
 totalSubmissiosn = 0
+
+
+# Splits on '-' for posts following "artist - song" schema
+# Parses and cleans data (removing useless posts)
 
 def getTracks(subreddit, amount):
     print("Grabbing " + subreddit)
@@ -69,6 +75,7 @@ def getTracks(subreddit, amount):
                 track.append(subreddit)
                 listOfTracks.append(track)
 
+# List of subreddits to fetch from
 subredditList = ['metalcore', 'hardcore', 'posthardcore', 'metal', 'deathmetal', 'progmetal',
                  'edm', 'dubstep', 'dnb', 'tropicalhouse', 'electronicmusic',
                  'modernrockmusic', 'postrock', 'punk',
@@ -84,20 +91,18 @@ subredditList = ['metalcore', 'hardcore', 'posthardcore', 'metal', 'deathmetal',
 
 subredditList.sort()
 
-print("Subreddit Order")
-for sub in subredditList:
-    print(sub)
-
 for sub in subredditList:
     getTracks(sub, nTracks)
 
 print("Sorting...")
 listOfTracks.sort()
 
+# Restructures listOfTracks in to a dictionary, d
 d = defaultdict(set)
 for a,b, c in listOfTracks:
     d[a].add(c)
 
+# Checks occurances of each subreddit combination in the dictionaries
 def checkOccurances(d, genreA, genreB):
     count = 0
     for d in d.items():
@@ -106,6 +111,7 @@ def checkOccurances(d, genreA, genreB):
     if count>0:
         tempRow = []
         print(genreA + " + " + genreB + ": " + str(count))
+        # Appends data in a Gephi readable format
         tempRow.append(genreA)
         tempRow.append(genreB)
         tempRow.append('Undirected')
@@ -113,12 +119,12 @@ def checkOccurances(d, genreA, genreB):
         data.append(tempRow)
 
 data = []
+
+# Adds titles for Gephi
 data.append(['source', 'target', 'type', 'weight'])
 
-print("Subreddit Order")
-for sub in subredditList:
-    print(str(subredditList.index(sub)) + " " + sub)
-
+# Loops through every combination of subreddits and doesn't permit commutativity
+# For example - pop + metal = metal + pop, reduces search time
 currentStart = 0
 for i in subredditList:
     currentStart += 1
@@ -127,10 +133,7 @@ for i in subredditList:
             continue
         checkOccurances(d, i, j)
 
-print("Printing data...")
-
-print(data)
-
+# Outputs data to CSV in Gephi readable format
 print("Writing to CSV...")
 with open('mydata.csv', 'w', newline='') as mycsvfile:
     thedatawriter = csv.writer(mycsvfile, dialect='mydialect')
