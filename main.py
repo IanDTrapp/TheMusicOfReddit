@@ -1,12 +1,8 @@
 import praw
 import re
 import csv
-import networkx as nx
-from collections import defaultdict, OrderedDict
-import itertools
-#import matplotlib.pyplot as plt
 
-G = nx.Graph()
+from collections import defaultdict, OrderedDict
 
 csv.register_dialect(
     'mydialect',
