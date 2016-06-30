@@ -2,7 +2,7 @@ import praw
 import re
 import csv
 import networkx as nx
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, Counter, OrderedDict
 import itertools
 #import matplotlib.pyplot as plt
 
@@ -19,10 +19,12 @@ csv.register_dialect(
 
 r = praw.Reddit(user_agent='theMusicOfReddit')
 
-listOfTracks = []
+listOfComments = []
+allComments = []
+justSubreddits = []
 
 # Number of tracks you wish to fetch from each subreddit
-nTracks = 1000
+nTracks = 50
 
 totalSubmissiosn = 0
 
@@ -30,50 +32,18 @@ totalSubmissiosn = 0
 # Splits on '-' for posts following "artist - song" schema
 # Parses and cleans data (removing useless posts)
 
-def getTracks(subreddit, amount):
+def getComments(subreddit, amount):
     print("Grabbing " + subreddit)
     submissions = r.get_subreddit(subreddit).get_top_from_all(limit=amount)
-    print("Parsing...")
-    for x in submissions:
-        if "-" in x.title:
-            title = re.sub('\([^)]*\)', '', x.title)
-            title = re.sub('\[.*\]', '', title)
-            title = title.lower()
-            try:
-                title.encode('ascii')
-            except UnicodeEncodeError:
+    for submission in submissions:
+        submission.replace_more_comments(limit=2, threshold=0)
+        comments = praw.helpers.flatten_tree(submission.comments)
+        for comment in comments:
+            if not hasattr(comment, 'author'):
                 continue
-            else:
-                track = title.split("-")
-                if len(track) <= 1 or len(track) > 2:
-                    continue
-                if len(track[0]) > 40:
-                    continue
-                if 1459468800 < x.created < 1459555199:
-                    continue
-                if 1427846400 < x.created < 1427932799:
-                    continue
-                if 1364774400 < x.created < 1396396799:
-                    continue
-                if 1396310400 < x.created < 1364860799:
-                    continue
-                if 1333238400 < x.created < 1333324799:
-                    continue
-                if 1301616000 < x.created < 1301702399:
-                    continue
-                if 1270080000 < x.created < 1270166399:
-                    continue
-                if 1238544000 < x.created < 1238630399:
-                    continue
-                if 1207008000 < x.created < 1207094399:
-                    continue
-                track[0] = track[0].strip()
-                track[0] = re.sub('([^\s\w]|_)+', '', track[0])
-                track[1] = track[1].strip()
-                track[1] = re.sub('([^\s\w]|_)+', '', track[1])
-
-                track.append(subreddit)
-                listOfTracks.append(track)
+            if str(comment.author) == 'None':
+                continue
+            allComments.append([str(comment.author), subreddit, str(comment.score)])
 
 # List of subreddits to fetch from
 subredditList = ['metalcore', 'hardcore', 'posthardcore', 'metal', 'deathmetal', 'progmetal',
@@ -91,24 +61,22 @@ subredditList = ['metalcore', 'hardcore', 'posthardcore', 'metal', 'deathmetal',
 
 subredditList.sort()
 
-for sub in subredditList:
-    getTracks(sub, nTracks)
 
-print("Sorting...")
-listOfTracks.sort()
+
+for sub in subredditList:
+    getComments(sub, nTracks)
 
 # Restructures listOfTracks in to a dictionary, d
 d = defaultdict(set)
-for a,b, c in listOfTracks:
-    d[a].add(c)
+for a,b, c  in allComments:
+    d[a].add(b)
 
-# Checks occurances of each subreddit combination in the dictionaries
 def checkOccurances(d, genreA, genreB):
     count = 0
     for d in d.items():
         if genreA in (sorted(d[1])) and genreB in (sorted(d[1])):
             count += 1
-    if count>2:
+    if count>0:
         tempRow = []
         print(genreA + " + " + genreB + ": " + str(count))
         # Appends data in a Gephi readable format
@@ -123,8 +91,6 @@ data = []
 # Adds titles for Gephi
 data.append(['source', 'target', 'type', 'weight'])
 
-# Loops through every combination of subreddits and doesn't permit commutativity
-# For example - pop + metal = metal + pop, reduces search time
 currentStart = 0
 for i in subredditList:
     currentStart += 1
@@ -134,10 +100,15 @@ for i in subredditList:
         checkOccurances(d, i, j)
 
 # Outputs data to CSV in Gephi readable format
-print("Writing to CSV...")
+#print("Writing to CSV...")
 with open('mydata.csv', 'w', newline='') as mycsvfile:
     thedatawriter = csv.writer(mycsvfile, dialect='mydialect')
     for row in data:
+        thedatawriter.writerow(row)
+
+with open('allcomments.csv', 'w', newline='') as mycsvfile:
+    thedatawriter = csv.writer(mycsvfile, dialect='mydialect')
+    for row in allComments:
         thedatawriter.writerow(row)
 
 print("CSV output done!")
