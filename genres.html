@@ -1,1 +1,150 @@
 
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>The Music Of Reddit by IanDTrapp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">The Music Of Reddit</h1>
+      <h2 class="project-tagline">A multi-part analysis of musical subreddits</h2>
+      <a href="https://github.com/IanDTrapp/TheMusicOfReddit" class="btn">View on GitHub</a>
+      <a href="https://github.com/IanDTrapp/TheMusicOfReddit/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/IanDTrapp/TheMusicOfReddit/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="part-one---associations-between-musical-subreddits" class="anchor" href="#part-one---associations-between-musical-subreddits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part One - Associations Between Musical Subreddits</h1>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Reddit has many musical subreddits, and I became curious as to which genres are most closely associated with each other. To figure this out, I wrote a Python script to fetch the top 1,000 posts of all time from each of the following subreddits: </p>
+
+<ul>
+<li>90shiphop</li>
+<li>alternativerock</li>
+<li>ambientmusic</li>
+<li>blackmetal</li>
+<li>blues</li>
+<li>chillstep</li>
+<li>classical</li>
+<li>classicalmusicclassicrock</li>
+<li>country</li>
+<li>deathcore</li>
+<li>deathmetal</li>
+<li>djent</li>
+<li>dnb</li>
+<li>doommetal</li>
+<li>dubstep</li>
+<li>edm</li>
+<li>electrohouse</li>
+<li>electronicmusic</li>
+<li>electroswing</li>
+<li>folk</li>
+<li>funk</li>
+<li>hardcore</li>
+<li>hardstyle</li>
+<li>hiphopheads</li>
+<li>indie_rock</li>
+<li>indiefolk</li>
+<li>indieheads</li>
+<li>jazz</li>
+<li>melodichardcore</li>
+<li>metal</li>
+<li>metalcore</li>
+<li>modernrockmusic</li>
+<li>popheads</li>
+<li>poppunkers</li>
+<li>posthardcore</li>
+<li>postmetal</li>
+<li>postrock</li>
+<li>powermetal</li>
+<li>progmetal</li>
+<li>progrockmusic</li>
+<li>psybient</li>
+<li>psychedelicrock</li>
+<li>punk</li>
+<li>rap</li>
+<li>reggae</li>
+<li>seashanties</li>
+<li>ska</li>
+<li>sludge</li>
+<li>stonermetal</li>
+<li>swinghouse</li>
+<li>techno</li>
+<li>trance</li>
+<li>trap</li>
+<li>triphop</li>
+<li>tropicalhouse</li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="methodology" class="anchor" href="#methodology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Methodology</h2>
+
+<p>I parsed out the artist, song, and subreddit from each submission under the assumption that the posts were in "Artist - Song" format, cleaned up the data by removing extra characters such as '()' and '[]', and made the strings uniform (trimming and conversion to lower case.) From there, I condensed like artists in to a Python dictionary with the format ['artist', [set of subreddits]]. I then iterated through all subreddit combinations and counted each connection, except for commutative comparisons (for example, pop compared to metal is the same thing as metal compared to pop) and obviously to comparisons to itself (metal wouldn't compare to metal.) After some trial and error, I made sure to output this to CSV in a way that could be directly imported in to Gephi.</p>
+
+<p>After importing the data, I messed around with a few visualization techniques and found the results very interesting. I've included two below: Yifan Hu proportional and Frutcherman Reingold.</p>
+
+<hr>
+
+<h2>
+<a id="the-data" class="anchor" href="#the-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Data</h2>
+
+<h3>
+<a id="fruchterman-reingold-layout" class="anchor" href="#fruchterman-reingold-layout" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fruchterman Reingold Layout</h3>
+
+<p><img src="http://svgur.com/i/7F.svg" alt=""></p>
+
+<p>The Fruchterman Reingold layout is "concerned with drawing undirected graphs according to some generally accepted aesthetic criteria:</p>
+<p>1. Distribute the vertices evenly in the frame.</p>
+<p>2. Minimize edge crossings.</p>
+<p>3. Make edge lengths uniform.</p>
+<p>4. Reflect inherent symmetry.</p>
+<p>5. Conform to the frame."</p>
+
+<p>Though they explain their algorithm isn't explicitly trying to achieve these goals, it "does well at distributing vertices evenly, making edge lengths uniform, and reflecting symmetry"</p>
+
+<p>Their actual algorithm focuses on two principles:</p> 
+
+<p>"1. Vertices connected by an edge should be drawn near each other</p>
+<p>2. Vertices should not be drawn too close to each other"</p>
+
+<p>Because of these principles, we get an excellent visual look in to the relation of subreddits. As a product of these rules, this layout clusters like subreddits together, putting more niche and unique subreddits with fewer connections to the outside, and more mainstream subreddits with many connections closer towards the center. In theory, the node closest to the center should be the node with the most connections.</p>
+
+<p>In the Fruchterman Reingold layout above, <a href="http://reddit.com/r/indie_rock">/r/indie_rock</a>, <a href="http://reddit.com/r/alternativerock">/r/alternativerock</a>, and <a href="http://reddit.com/r/indieheads">/r/indieheads</a> all seem to be center pieces in this graph with 13, 23, and 12 unique connections respectively. <a href="http://reddit.com/r/indie_rock">/r/indie_rock</a>'s connections are actually a subset of all the connections <a href="http://reddit.com/r/alternativerock">/r/alternativerock</a> has however, so it is safe to say that <a href="http://reddit.com/r/alternativerock">/r/alternativerock</a> and <a href="http://reddit.com/r/indieheads">/r/indieheads</a> together serve as the glue for many subreddits. </p>
+
+<p>Another interesting thing to note is the relative interconnectivity of the like-genre subreddits - the electronic music subreddits have a very large amount of interconnectivity (bottom left corner), as do the heavier music subreddits (closer towards the top of the graph). Indie music (closer towards the center) is also very interconnected. This goes to show how artists and even genres tend to be very loosely defined when it comes to where they belong, and who enjoys hearing them. Remember, as these are the artists I was able to parse from the top 1,000 posts, these artists are very likely to have been voted highly in each respective post. This means that artists weren't just cross posted to other subreddits and then downvoted, these were voted on and in a sense having their belonging to the subreddit confirmed by the users.</p>
+<h3>
+<a id="yifan-hu-layout" class="anchor" href="#yifan-hu-layout" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Yifan Hu Proportional Layout</h3>
+
+<p><img src="http://svgur.com/i/6V.svg" alt=""></p>
+
+<p>For looking at proportional distancing of like-genre subreddits, the Yifan Hu Proportional layout gives us a great look at how similar certain subreddits are clustered by strength of similarity. The Yifan Hu Proportional is also a force-directed graph algorithm that combines the Fruchterman Reingold algorithm with some much more complicated mathematics that are currently above my level. The product, however, is a fantastic representation of relative connectivity. This representation better shows us the interconnectivity of the respective "macrogenres", displaying the clustering effect of electronic music, indie, and heavier music while showing the relative irrelevancy of genres like country, jazz, and sea shanties. This also serves as a mini case study on what is popular among reddit users, and it comes as no surprise that electronic music is far more active of a community than country music.</p>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h2>
+<p><a href="http://yifanhu.net/PUB/ch16.pdf">Algorithms for Visualizing Large Networks</a> - Yifan Hu (September 2011)</p>
+<p><a href="http://citeseer.ist.psu.edu/viewdoc/download?doi=10.1.1.13.8444&rep=rep1&type=pdf">Graph Drawing by Force-directed Placement</a> - Thomas M. J. Fruchterman and Edward M. Reingold (November 1991)</p>
+<p><a href="http://www.mathematica-journal.com/issue/v10i1/contents/graph_draw/graph_draw.pdf">Efficient, High-Quality Force-Directed Graph Drawing</a> - Yifan Hu (2006)</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/IanDTrapp/TheMusicOfReddit">The Music Of Reddit</a> is maintained by <a href="https://github.com/IanDTrapp">IanDTrapp</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
