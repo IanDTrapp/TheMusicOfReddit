@@ -19,7 +19,7 @@ allComments = []
 justSubreddits = []
 
 # Number of tracks you wish to fetch from each subreddit
-nTracks = 50
+nTracks = 25
 
 totalSubmissiosn = 0
 
@@ -37,6 +37,8 @@ def getComments(subreddit, amount):
             if not hasattr(comment, 'author'):
                 continue
             if str(comment.author) == 'None':
+                continue
+            if str(comment.author) == '':
                 continue
             allComments.append([str(comment.author), subreddit, str(comment.score)])
 
@@ -63,7 +65,7 @@ for sub in subredditList:
 
 # Restructures listOfTracks in to a dictionary, d
 d = defaultdict(set)
-for a,b, c  in allComments:
+for a,b, c in allComments:
     d[a].add(b)
 
 def checkOccurances(d, genreA, genreB):
@@ -96,7 +98,7 @@ for i in subredditList:
 
 # Outputs data to CSV in Gephi readable format
 #print("Writing to CSV...")
-with open('mydata.csv', 'w', newline='') as mycsvfile:
+with open('userTableData.csv', 'w', newline='') as mycsvfile:
     thedatawriter = csv.writer(mycsvfile, dialect='mydialect')
     for row in data:
         thedatawriter.writerow(row)
