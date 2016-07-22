@@ -25,12 +25,12 @@
 <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>In part two, I examine common users between musical subreddits. Much like part one, I used Python! I wrote a script to fetch the comments from the top 50 posts of all time from each subreddit (list can be found <a href="/TheMusicOfReddit/genres">here</a>).I found common users between the subreddits and determined graph edge weights by counting common users. It may seem like 50 is a low sample size, but some of the posts have over a thousand comments. In my experience, the process for grabbing comments cost more time than the process for grabbing post titles using this API.</p>
+<p>In part two, I examine common users between musical subreddits. Much like part one, I used Python! I wrote a script to fetch the comments from the top 50 posts of all time from each subreddit (list can be found <a href="/TheMusicOfReddit/genres">here</a>). I found common users between the subreddits and determined graph edge weights by counting common users. It may seem like 50 is a low sample size, but some of the posts have over a thousand comments and, in my experience, the process for grabbing comments cost more time than the process for grabbing post titles using this API.</p>
 
 <h2>
 <a id="methodology" class="anchor" href="#methodology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Methodology</h2>
 
-<p></p>
+<p>My methodology here is very similar to the first part. I fetched the top 50 submissions from each subreddit, grabbed every comment from them, and saved the 'author' attribute. I then filtered out errors (posts that had been deleted, for example) and condensed my data in to a dictionary where the users are the keys, and their respective subreddits are their values.</p>
 
 <p></p>
 
